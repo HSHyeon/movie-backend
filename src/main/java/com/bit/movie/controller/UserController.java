@@ -42,7 +42,20 @@ public class UserController {
         }
         return resultMap;
     }
+    @GetMapping("logout")
+    public Object logout(HttpServletResponse response) {
+        Map<String, Object> resultMap = new HashMap<>();
 
+        Cookie jwtCookie = new Cookie("jwt", null);
+        jwtCookie.setSecure(true);
+        jwtCookie.setPath("/");
+        jwtCookie.setMaxAge(0);
+        response.addCookie(jwtCookie);
+
+        resultMap.put("result", "success");
+        resultMap.put("message", "로그아웃 성공");
+        return resultMap;
+    }
     @PostMapping("register")
     public Object register(@RequestBody UserDTO userDTO) {
         Map<String, Object> resultMap = new HashMap<>();
