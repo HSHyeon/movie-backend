@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mappers.ReviewMapper">
+    <select id="selectAll" resultType="reviewDTO" parameterType="String">
+        SELECT * FROM review
+        INNER JOIN user
+        ON review.writer_id = user.id
+        INNER JOIN movie
+        ON review.movie_id = movie.id
+        WHERE review.movie_id = #{id}
+        ORDER BY review.id DESC
+    </select>
+    <select id="findLatestReviewsByMovieId" resultType="ReviewDTO">
+        SELECT *
+        FROM review
+        INNER JOIN user
+        ON review.writer_id = user.id
+        WHERE review.movie_id = #{movieId}
+          AND review.content IS NOT NULL
+          AND content != ''
+        ORDER BY review.entry_date DESC
+            LIMIT #{limit}
+    </select>
+    <select id="selectById" parameterType="string" resultType="reviewDTO">
+        SELECT * FROM review
+        WHERE writer_id=#{id}
+        AND movie_id = #{movieId}
+    </select>
+    <select id="selectOne" parameterType="string" resultType="reviewDTO">
+        SELECT * FROM review
+        INNER JOIN user
+        ON review.writer_id = user.id
+        INNER JOIN movie
+        ON review.movie_id = movie.id
+        WHERE review.id = #{id}
+    </select>
+    <select id="getMovieIdByReviewId" resultType="String" parameterType="String">
+        SELECT review_id
+        FROM review
+        WHERE id = #{id}
+    </select>
+    <insert id="insert" parameterType="reviewDTO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO review(content, writer_id, movie_id, score)
+        VALUES (#{content}, #{writerId}, #{movieId}, #{score})
+    </insert>
+    <delete id="delete" parameterType="String">
+        DELETE FROM review
+        WHERE id = #{id}
+    </delete>
+    <update id="update" parameterType="reviewDTO">
+        UPDATE review
+        SET score        = #{score},
+            content      = #{content},
+            modify_date= NOW()
+        WHERE id = #{id}
+    </update>
+</mapper>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mappers.MovieMapper">
+    <select id="selectAll" resultType="movieDTO">
+        SELECT movie.*, COALESCE(AVG(review.score), -1) AS averageRating
+        FROM movie
+                 LEFT JOIN review ON movie.id = review.movie_id
+        GROUP BY movie.id
+        ORDER BY movie.id DESC
+    </select>
+    <select id="selectOne" resultType="movieDTO" parameterType="String">
+        SELECT movie.*, COALESCE(AVG(review.score), -1) AS averageRating
+        FROM movie
+                 LEFT JOIN review ON movie.id = review.movie_id
+
+        WHERE movie.id = #{id}
+        GROUP BY movie.id
+    </select>
+    <insert id="insert" parameterType="movieDTO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO movie(title, content, writer_id, release_date, genre)
+        VALUES (#{title}, #{content}, #{writerId}, #{releaseDate}, #{genre})
+    </insert>
+    <delete id="delete" parameterType="string">
+        DELETE
+        FROM movie
+        WHERE id = #{id}
+    </delete>
+    <update id="update" parameterType="movieDTO">
+        UPDATE movie
+        SET title        = #{title},
+            content      = #{content},
+            genre        = #{genre},
+            release_date = #{releaseDate},
+            modify_date= NOW()
+        WHERE id = #{id}
+    </update>
+</mapper>
