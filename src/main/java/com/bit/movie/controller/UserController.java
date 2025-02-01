@@ -8,6 +8,8 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -42,6 +44,7 @@ public class UserController {
         }
         return resultMap;
     }
+
     @GetMapping("logout")
     public Object logout(HttpServletResponse response) {
         Map<String, Object> resultMap = new HashMap<>();
@@ -56,6 +59,7 @@ public class UserController {
         resultMap.put("message", "로그아웃 성공");
         return resultMap;
     }
+
     @PostMapping("register")
     public Object register(@RequestBody UserDTO userDTO) {
         Map<String, Object> resultMap = new HashMap<>();
@@ -68,6 +72,26 @@ public class UserController {
         } else {
             USER_SERVICE.register(userDTO);
             resultMap.put("result", "success");
+        }
+        return resultMap;
+    }
+
+    /*
+    * 사용자가 임의로 자신의 권한을 수정할 수 있음
+    * TODO 관리자가 권한을 허용하면 바뀔 수 있도록 수정
+    * */
+    @PostMapping("role")
+    public Object update(@RequestParam String newRole, @AuthenticationPrincipal UserDetails userDetails) {
+        Map<String, Object> resultMap = new HashMap<>();
+        try {
+            String username = userDetails.getUsername();
+            int userId = USER_SERVICE.loadByUsername(username).getId();
+            USER_SERVICE.updateUserRole(userId, newRole);
+            resultMap.put("result", "success");
+            resultMap.put("authority", newRole);
+        } catch (Exception e) {
+            resultMap.put("result", "fail");
+            resultMap.put("message", e.getMessage());
         }
         return resultMap;
     }

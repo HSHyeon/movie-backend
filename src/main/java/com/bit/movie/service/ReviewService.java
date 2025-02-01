@@ -24,7 +24,7 @@ public class ReviewService {
         params.put("limit", limit);
         return sqlSession.selectList(NAMESPACE+".findLatestReviewsByMovieId", params);
     }
-    public boolean validateReview(String id, String movieId){
+    public boolean validateReview(int id, int movieId){
         Map<String, Object> params = new HashMap<>();
         params.put("movieId", movieId);
         params.put("id", id);

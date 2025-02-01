@@ -42,7 +42,7 @@ public class SecurityConfig {
         // 기존 설정 유지
         security.authorizeHttpRequests(req -> req
                 .requestMatchers("/", "/WEB-INF/view/**", "/resources/**", "/api/user/auth", "/api/user/register").permitAll()
-                .requestMatchers("/api/movie/write").hasRole("ADMIN")
+                .requestMatchers("/api/movie/write","/api/movie/update","/api/movie/delete/{id}").hasRole("ADMIN")
                 .requestMatchers("/api/user/**").authenticated()
                 .anyRequest().authenticated()
         );

@@ -9,6 +9,10 @@
                  LEFT JOIN review ON movie.id = review.movie_id
         GROUP BY movie.id
         ORDER BY movie.id DESC
+            LIMIT ${startRow}, ${limitSize}
+    </select>
+    <select id="selectMaxPage" resultType="int">
+        SELECT COUNT(*) FROM movie
     </select>
     <select id="selectOne" resultType="movieDTO" parameterType="String">
         SELECT movie.*, COALESCE(AVG(review.score), -1) AS averageRating

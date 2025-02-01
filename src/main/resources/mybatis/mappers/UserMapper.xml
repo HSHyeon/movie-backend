@@ -27,4 +27,9 @@
         SELECT * FROM user
         WHERE email=#{email}
     </select>
+    <update id="updateRole">
+        UPDATE user
+        SET role=#{role}
+        WHERE id = #{id}
+    </update>
 </mapper>

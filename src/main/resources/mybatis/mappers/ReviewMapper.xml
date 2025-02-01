@@ -23,12 +23,12 @@
         ORDER BY review.entry_date DESC
             LIMIT #{limit}
     </select>
-    <select id="selectById" parameterType="string" resultType="reviewDTO">
+    <select id="selectById" parameterType="int" resultType="reviewDTO">
         SELECT * FROM review
         WHERE writer_id=#{id}
         AND movie_id = #{movieId}
     </select>
-    <select id="selectOne" parameterType="string" resultType="reviewDTO">
+    <select id="selectOne" resultType="reviewDTO">
         SELECT * FROM review
         INNER JOIN user
         ON review.writer_id = user.id
@@ -36,7 +36,7 @@
         ON review.movie_id = movie.id
         WHERE review.id = #{id}
     </select>
-    <select id="getMovieIdByReviewId" resultType="String" parameterType="String">
+    <select id="getMovieIdByReviewId" resultType="string" parameterType="String">
         SELECT review_id
         FROM review
         WHERE id = #{id}

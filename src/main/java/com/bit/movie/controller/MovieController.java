@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 @RestController
 @RequestMapping("/api/movie")
 @AllArgsConstructor
@@ -28,12 +29,13 @@ public class MovieController {
     @Autowired
     private MovieService MOVIE_SERVICE;
     @Autowired
-    private UserService userService;
+    private UserService USER_SERVICE;
 
     @GetMapping("")
-    public Object showAll() {
+    public Object showAll(@RequestParam(defaultValue = "1") int page) {
         Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("list", MOVIE_SERVICE.selectAll());
+        resultMap.put("list", MOVIE_SERVICE.selectAll(page));
+        resultMap.put("total",MOVIE_SERVICE.selectMaxPage());
         resultMap.put("result", "success");
         return resultMap;
     }
@@ -49,8 +51,8 @@ public class MovieController {
             resultMap.put("message", "유효하지 않은 글 번호입니다");
             return resultMap;
         } else {
-            resultMap.put("item",movieDTO);
-            resultMap.put("review",latestReviews);
+            resultMap.put("item", movieDTO);
+            resultMap.put("review", latestReviews);
             resultMap.put("result", "success");
         }
         return resultMap;
@@ -59,7 +61,11 @@ public class MovieController {
     @PostMapping("/write")
     public Object write(@RequestBody MovieDTO movieDTO, @AuthenticationPrincipal UserDetails userDetails) {
         Map<String, Object> resultMap = new HashMap<>();
+
         try {
+            String username = userDetails.getUsername();
+            int userId = USER_SERVICE.loadByUsername(username).getId();
+            movieDTO.setWriterId(userId);
             MOVIE_SERVICE.insert(movieDTO);
             resultMap.put("result", "success");
         } catch (Exception e) {

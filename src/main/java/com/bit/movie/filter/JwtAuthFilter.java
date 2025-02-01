@@ -1,6 +1,5 @@
 package com.bit.movie.filter;
 
-import com.bit.movie.model.UserDTO;
 import com.bit.movie.provider.JwtProvider;
 import com.bit.movie.service.UserDetailsServiceImpl;
 import jakarta.servlet.FilterChain;

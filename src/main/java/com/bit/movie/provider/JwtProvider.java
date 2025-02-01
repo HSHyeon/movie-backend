@@ -76,7 +76,10 @@ public class JwtProvider {
     public String getUsername(String token) {
         return getClaims(token).get("username", String.class);
     }
-
+    public Long getUserId(String token) {
+        Claims claims = getClaims(token);
+        return claims.get("id", Long.class);
+    }
     // JWT 복호화
     public Authentication getAuthentication(String token) {
         Claims claims = getClaims(token);
@@ -113,6 +116,7 @@ public class JwtProvider {
         }
         return false;
     }
+
 
     public String readToken(HttpServletRequest request) {
         String token = request.getHeader("Authorization");

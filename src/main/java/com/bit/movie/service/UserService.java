@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Service
 public class UserService {
     @Autowired
@@ -25,6 +28,16 @@ public class UserService {
     }
     public boolean validateUsername(UserDTO userDTO){
         return sqlSession.selectOne(NAMESPACE+".validateUsername",userDTO)==null;
+    }
+
+    public void updateUserRole(int userId, String newRole) {
+        if (!newRole.startsWith("ROLE_")) {
+            newRole = "ROLE_" + newRole.toUpperCase();
+        }
+        Map<String, Object> params = new HashMap<>();
+        params.put("role", newRole);
+        params.put("id", userId);
+        sqlSession.update(NAMESPACE+".updateRole", params);
     }
 
     public boolean validateNickname(UserDTO userDTO){
