@@ -42,8 +42,8 @@
         WHERE id = #{id}
     </select>
     <insert id="insert" parameterType="reviewDTO" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO review(content, writer_id, movie_id, score)
-        VALUES (#{content}, #{writerId}, #{movieId}, #{score})
+        INSERT INTO review(writer_id, movie_id, score)
+        VALUES ( #{writerId}, #{movieId}, #{score})
     </insert>
     <delete id="delete" parameterType="String">
         DELETE FROM review
@@ -53,6 +53,12 @@
         UPDATE review
         SET score        = #{score},
             content      = #{content},
+            modify_date= NOW()
+        WHERE id = #{id}
+    </update>
+    <update id="updateContent" parameterType="reviewDTO">
+        UPDATE review
+        SET content      = #{content},
             modify_date= NOW()
         WHERE id = #{id}
     </update>

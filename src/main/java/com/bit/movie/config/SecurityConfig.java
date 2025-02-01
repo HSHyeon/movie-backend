@@ -43,6 +43,7 @@ public class SecurityConfig {
         security.authorizeHttpRequests(req -> req
                 .requestMatchers("/", "/WEB-INF/view/**", "/resources/**", "/api/user/auth", "/api/user/register").permitAll()
                 .requestMatchers("/api/movie/write","/api/movie/update","/api/movie/delete/{id}").hasRole("ADMIN")
+                .requestMatchers("/api/review/write/content").hasAnyRole("ADMIN","CRITIC")
                 .requestMatchers("/api/user/**").authenticated()
                 .anyRequest().authenticated()
         );

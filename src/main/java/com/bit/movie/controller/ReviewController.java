@@ -45,7 +45,7 @@ public class ReviewController {
         return resultMap;
     }
 
-    @PostMapping("write")
+    @PostMapping("write/score")
     public Object write(@RequestBody ReviewDTO reviewDTO,  @AuthenticationPrincipal UserDetails userDetails) {
         Map<String, Object> resultMap = new HashMap<>();
         try {
@@ -59,7 +59,19 @@ public class ReviewController {
                 return resultMap;
             }
             REVIEW_SERVICE.insert(reviewDTO);
-
+            resultMap.put("reviewId", reviewDTO.getId());
+            resultMap.put("result", "success");
+        } catch (Exception e) {
+            resultMap.put("result", "fail");
+            resultMap.put("message", e.getMessage());
+        }
+        return resultMap;
+    }
+    @PostMapping("write/content")
+    public Object write(@RequestBody ReviewDTO reviewDTO) {
+        Map<String, Object> resultMap = new HashMap<>();
+        try {
+            REVIEW_SERVICE.writeContent(reviewDTO.getId(),reviewDTO.getContent());
             resultMap.put("result", "success");
         } catch (Exception e) {
             resultMap.put("result", "fail");

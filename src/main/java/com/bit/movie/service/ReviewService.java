@@ -42,6 +42,12 @@ public class ReviewService {
     public void update(ReviewDTO reviewDTO) {
         sqlSession.update(NAMESPACE + ".update", reviewDTO);
     }
+    public void writeContent(int id, String content) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("id", id);
+        params.put("content", content);
+        sqlSession.update(NAMESPACE + ".updateContent", params);
+    }
     public int getMovieIdByReplyId(int reviewId) {
         return sqlSession.selectOne(NAMESPACE + ".getMovieIdByReplyId", reviewId);
     }
