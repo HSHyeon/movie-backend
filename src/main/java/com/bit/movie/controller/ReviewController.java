@@ -26,6 +26,7 @@ public class ReviewController {
     public Object showAll(@PathVariable String id) {
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("list", REVIEW_SERVICE.selectAll(id));
+        resultMap.put("total",REVIEW_SERVICE.getTotal(id));
         resultMap.put("result", "success");
         return resultMap;
     }

@@ -56,6 +56,10 @@
             modify_date= NOW()
         WHERE id = #{id}
     </update>
+    <select id="getTotal" resultType="int">
+        SELECT COUNT(*) FROM review
+        WHERE movie_id = #{id}
+    </select>
     <update id="updateContent" parameterType="reviewDTO">
         UPDATE review
         SET content      = #{content},

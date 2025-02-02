@@ -52,6 +52,7 @@ public class MovieController {
             return resultMap;
         } else {
             resultMap.put("item", movieDTO);
+            resultMap.put("reviewTotal",REVIEW_SERVICE.getTotal(id));
             resultMap.put("review", latestReviews);
             resultMap.put("result", "success");
         }
