@@ -2,12 +2,13 @@ package com.bit.movie.controller;
 
 import com.bit.movie.model.ReviewDTO;
 import com.bit.movie.model.UserDTO;
+import com.bit.movie.provider.JwtProvider;
 import com.bit.movie.service.ReviewService;
 import com.bit.movie.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -21,17 +22,19 @@ public class ReviewController {
     private ReviewService REVIEW_SERVICE;
     @Autowired
     private UserService USER_SERVICE;
+    @Autowired
+    private JwtProvider jwtProvider;
 
     @GetMapping("{id}")
     public Object showAll(@PathVariable String id) {
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("list", REVIEW_SERVICE.selectAll(id));
-        resultMap.put("total",REVIEW_SERVICE.getTotal(id));
+        resultMap.put("total", REVIEW_SERVICE.getTotal(id));
         resultMap.put("result", "success");
         return resultMap;
     }
 
-    @GetMapping("/detail/{id}")
+    @GetMapping("detail/{id}")
     public Object showOne(@PathVariable String id) {
         Map<String, Object> resultMap = new HashMap<>();
         ReviewDTO reviewDTO = REVIEW_SERVICE.selectOne(id);
@@ -47,10 +50,12 @@ public class ReviewController {
     }
 
     @PostMapping("write/score")
-    public Object write(@RequestBody ReviewDTO reviewDTO,  @AuthenticationPrincipal UserDetails userDetails) {
+    public Object write(@RequestBody ReviewDTO reviewDTO, HttpServletRequest request) {
         Map<String, Object> resultMap = new HashMap<>();
         try {
-            String username = userDetails.getUsername();
+            String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+            String token = authHeader.substring(7);
+            String username = jwtProvider.getUsername(token);
             UserDTO userDTO = USER_SERVICE.loadByUsername(username);
             reviewDTO.setWriterId(userDTO.getId());
 
@@ -68,11 +73,12 @@ public class ReviewController {
         }
         return resultMap;
     }
+
     @PostMapping("write/content")
     public Object write(@RequestBody ReviewDTO reviewDTO) {
         Map<String, Object> resultMap = new HashMap<>();
         try {
-            REVIEW_SERVICE.writeContent(reviewDTO.getId(),reviewDTO.getContent());
+            REVIEW_SERVICE.writeContent(reviewDTO.getId(), reviewDTO.getContent());
             resultMap.put("result", "success");
         } catch (Exception e) {
             resultMap.put("result", "fail");
@@ -81,7 +87,7 @@ public class ReviewController {
         return resultMap;
     }
 
-    @PostMapping("/update")
+    @PostMapping("update")
     public Object update(@RequestBody ReviewDTO reviewDTO) {
         Map<String, Object> resultMap = new HashMap<>();
         try {
@@ -95,7 +101,7 @@ public class ReviewController {
         return resultMap;
     }
 
-    @GetMapping("/delete/{id}")
+    @GetMapping("delete/{id}")
     public Object delete(@PathVariable String id) {
         Map<String, Object> resultMap = new HashMap<>();
 

@@ -2,19 +2,16 @@ package com.bit.movie.controller;
 
 import com.bit.movie.model.MovieDTO;
 import com.bit.movie.model.ReviewDTO;
-import com.bit.movie.model.UserDTO;
+import com.bit.movie.provider.JwtProvider;
 import com.bit.movie.service.MovieService;
 import com.bit.movie.service.ReviewService;
 import com.bit.movie.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.ui.Model;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +27,8 @@ public class MovieController {
     private MovieService MOVIE_SERVICE;
     @Autowired
     private UserService USER_SERVICE;
+    @Autowired
+    private JwtProvider jwtProvider;
 
     @GetMapping("")
     public Object showAll(@RequestParam(defaultValue = "1") int page) {
@@ -60,11 +59,14 @@ public class MovieController {
     }
 
     @PostMapping("/write")
-    public Object write(@RequestBody MovieDTO movieDTO, @AuthenticationPrincipal UserDetails userDetails) {
+    public Object write(@RequestBody MovieDTO movieDTO, HttpServletRequest request) {
         Map<String, Object> resultMap = new HashMap<>();
 
         try {
-            String username = userDetails.getUsername();
+            String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+            String token = authHeader.substring(7);
+            String username = jwtProvider.getUsername(token);
+
             int userId = USER_SERVICE.loadByUsername(username).getId();
             movieDTO.setWriterId(userId);
             MOVIE_SERVICE.insert(movieDTO);

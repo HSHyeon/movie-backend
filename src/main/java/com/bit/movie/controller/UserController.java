@@ -2,14 +2,15 @@ package com.bit.movie.controller;
 
 import com.bit.movie.model.TokenDTO;
 import com.bit.movie.model.UserDTO;
+import com.bit.movie.provider.JwtProvider;
 import com.bit.movie.service.AuthService;
 import com.bit.movie.service.UserService;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -22,6 +23,8 @@ public class UserController {
     private final UserService USER_SERVICE;
     @Autowired
     private AuthService authService;
+    @Autowired
+    private JwtProvider jwtProvider;
 
     @PostMapping("auth")
     public Object auth(@RequestBody UserDTO userDTO, HttpServletResponse response) {
@@ -81,12 +84,14 @@ public class UserController {
     * TODO 관리자가 권한을 허용하면 바뀔 수 있도록 수정
     * */
     @PostMapping("role")
-    public Object update(@RequestParam String newRole, @AuthenticationPrincipal UserDetails userDetails) {
+    public Object update(@RequestParam String newRole, HttpServletRequest request) {
         Map<String, Object> resultMap = new HashMap<>();
         try {
-            String username = userDetails.getUsername();
-            int userId = USER_SERVICE.loadByUsername(username).getId();
-            USER_SERVICE.updateUserRole(userId, newRole);
+            String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+            String token = authHeader.substring(7);
+            String username = jwtProvider.getUsername(token);
+            UserDTO userDTO = USER_SERVICE.loadByUsername(username);
+            USER_SERVICE.updateUserRole(userDTO.getId(), newRole);
             resultMap.put("result", "success");
             resultMap.put("authority", newRole);
         } catch (Exception e) {

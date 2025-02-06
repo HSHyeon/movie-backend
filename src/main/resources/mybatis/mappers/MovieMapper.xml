@@ -23,8 +23,8 @@
         GROUP BY movie.id
     </select>
     <insert id="insert" parameterType="movieDTO" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO movie(title, content, writer_id, release_date, genre)
-        VALUES (#{title}, #{content}, #{writerId}, #{releaseDate}, #{genre})
+        INSERT INTO movie (title, content, writer_id, release_date, genre, image_url)
+        SELECT #{title}, #{content}, #{writerId}, #{releaseDate}, #{genre}, #{imageUrl}
     </insert>
     <delete id="delete" parameterType="string">
         DELETE
@@ -37,6 +37,7 @@
             content      = #{content},
             genre        = #{genre},
             release_date = #{releaseDate},
+            image_url    = COALESCE(NULLIF(#{imageUrl}, ''), image_url),
             modify_date= NOW()
         WHERE id = #{id}
     </update>

@@ -10,5 +10,6 @@
         <typeAlias type="com.bit.movie.model.UserDTO" alias="userDTO"/>
         <typeAlias type="com.bit.movie.model.ReviewDTO" alias="reviewDTO"/>
         <typeAlias type="com.bit.movie.model.MovieDTO" alias="movieDTO"/>
+        <typeAlias type="com.bit.movie.model.TheaterDTO" alias="theaterDTO"/>
     </typeAliases>
 </configuration>
